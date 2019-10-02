@@ -1,0 +1,17 @@
+version: '3'
+services:
+  oauth2:
+    build: .
+    networks:
+      - callstats
+    volumes:
+      - ./:/code
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_ENV=development
+      - AUTHLIB_INSECURE_TRANSPORT=1
+      - FLASK_DEBUG=1
+
+networks:
+  callstats: {}
