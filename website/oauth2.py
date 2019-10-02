@@ -10,6 +10,11 @@ from werkzeug.security import gen_salt
 from .models import db, User
 from .models import OAuth2Client, OAuth2AuthorizationCode, OAuth2Token
 
+class ClientCredentialsGrant(grants.ClientCredentialsGrant):
+    #: Allowed client auth methods for token endpoint
+    TOKEN_ENDPOINT_AUTH_METHODS = [
+        'client_secret_post'
+    ]
 
 class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
     def create_authorization_code(self, client, grant_user, request):
@@ -75,7 +80,7 @@ def config_oauth(app):
 
     # support all grants
     authorization.register_grant(grants.ImplicitGrant)
-    authorization.register_grant(grants.ClientCredentialsGrant)
+    authorization.register_grant(ClientCredentialsGrant)
     authorization.register_grant(AuthorizationCodeGrant)
     authorization.register_grant(PasswordGrant)
     authorization.register_grant(RefreshTokenGrant)

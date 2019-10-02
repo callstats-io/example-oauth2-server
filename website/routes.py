@@ -6,6 +6,11 @@ from authlib.oauth2 import OAuth2Error
 from .models import db, User, OAuth2Client
 from .oauth2 import authorization, require_oauth
 
+import logging
+logformat = '%(asctime)s [%(levelname)s] (%(name)s): %(message)s'
+logging.basicConfig(level=logging.DEBUG, format=logformat)
+log = logging.getLogger(__name__)
+
 
 bp = Blueprint(__name__, 'home')
 
@@ -82,7 +87,9 @@ def authorize():
 
 @bp.route('/oauth/token', methods=['POST'])
 def issue_token():
-    return authorization.create_token_response()
+    response = authorization.create_token_response()
+    log.info(response)
+    return response
 
 
 @bp.route('/oauth/revoke', methods=['POST'])
@@ -95,3 +102,12 @@ def revoke_token():
 def api_me():
     user = current_token.user
     return jsonify(id=user.id, username=user.username)
+
+
+@bp.route('/webhook/callstats/send-log', methods=['POST'])
+@require_oauth()
+def send_log():
+    log.info(request.json)
+    resp = jsonify(success=True)
+    resp.status_code = 200
+    return resp
